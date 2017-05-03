@@ -223,7 +223,7 @@
             self.popoverController = [self makePopoverController:self.imagePickerController];
             self.popoverController.delegate = self;
             
-            [self.popoverController presentPopoverFromRect:CGRectMake(400, 400, 100, 100) inView:self.delegate.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+            [self.popoverController presentPopoverFromRect:CGRectMake(CGRectGetMidX(self.imagePickerController.view.bounds), CGRectGetMidY(self.imagePickerController.view.bounds), 0, 0) inView:self.delegate.view permittedArrowDirections:0 animated:YES];
             
             /*
              if (self.showFromBarButtonItem) {
