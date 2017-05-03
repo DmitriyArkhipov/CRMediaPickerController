@@ -45,6 +45,7 @@
 		22D095091A55B1D900A5E45B /* CRMediaPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRMediaPickerController.h; sourceTree = "<group>"; };
 		22D0950A1A55B1D900A5E45B /* CRMediaPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRMediaPickerController.m; sourceTree = "<group>"; };
 		22F604A11A55FC5200A46E8F /* OverlayView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OverlayView.xib; sourceTree = "<group>"; };
+		CD9052701EBA28C1007B6D45 /* CRMediaPickerControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRMediaPickerControllerDelegate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +130,7 @@
 		22D095081A55B1D900A5E45B /* CRMediaPickerController */ = {
 			isa = PBXGroup;
 			children = (
+				CD9052701EBA28C1007B6D45 /* CRMediaPickerControllerDelegate.h */,
 				22D095091A55B1D900A5E45B /* CRMediaPickerController.h */,
 				22D0950A1A55B1D900A5E45B /* CRMediaPickerController.m */,
 			);
@@ -366,6 +368,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -377,6 +380,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

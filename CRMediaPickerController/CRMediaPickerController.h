@@ -5,6 +5,8 @@
 //  Created by Christian Roman on 9/4/14.
 //  Copyright (c) 2014 Christian Roman. All rights reserved.
 //
+//  Updated by Dmitriy Arkhipov on 24.11.16.
+//  Copyright © 2016 Dmitriy Arkhipov. All rights reserved.
 
 @import UIKit;
 @import AssetsLibrary;
@@ -21,14 +23,7 @@ typedef NS_OPTIONS(NSInteger, CRMediaPickerControllerSourceType) {
     CRMediaPickerControllerSourceTypeLastPhotoTaken     = 1 << 3
 };
 
-@class CRMediaPickerController;
-
-@protocol CRMediaPickerControllerDelegate <NSObject>
-
-@optional
-- (void)CRMediaPickerController:(CRMediaPickerController *)mediaPickerController didFinishPickingAsset:(ALAsset *)asset error:(NSError *)error;
-- (void)CRMediaPickerControllerDidCancel:(CRMediaPickerController *)mediaPickerController;
-@end
+@protocol CRMediaPickerControllerDelegate;
 
 @interface CRMediaPickerController: NSObject
 
@@ -51,6 +46,7 @@ typedef NS_OPTIONS(NSInteger, CRMediaPickerControllerSourceType) {
 @property (nonatomic, assign) BOOL showsCameraControls;
 
 - (void)show;
+- (void)showAndDeleteImage:(BOOL)isDelete;
 - (void)dismiss;
 - (BOOL)startVideoCapture;
 - (void)stopVideoCapture;

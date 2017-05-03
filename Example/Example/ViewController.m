@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "CRMediaPickerController.h"
+#import "CRMediaPickerControllerDelegate.h"
 
 @import MediaPlayer;
 

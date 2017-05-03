@@ -5,8 +5,11 @@
 //  Created by Christian Roman on 9/4/14.
 //  Copyright (c) 2014 Christian Roman. All rights reserved.
 //
+//  Updated by Dmitriy Arkhipov on 24.11.16.
+//  Copyright © 2016 Dmitriy Arkhipov. All rights reserved.
 
 #import "CRMediaPickerController.h"
+#import "CRMediaPickerControllerDelegate.h"
 
 @import MobileCoreServices.UTCoreTypes;
 @import AssetsLibrary;
@@ -80,6 +83,23 @@
     }
 }
 
+- (void)showAndDeleteImage:(BOOL)isDelete
+{
+    
+    if (self.sourceType == CRMediaPickerControllerSourceTypeLastPhotoTaken
+        || self.sourceType == CRMediaPickerControllerSourceTypePhotoLibrary
+        || self.sourceType == CRMediaPickerControllerSourceTypeCamera
+        || self.sourceType == CRMediaPickerControllerSourceTypeSavedPhotosAlbum) {
+        [self presentMediaPickerWithSourceType:self.sourceType];
+    } else {
+        
+        isDelete ? [self chooseMediaAndDelete] : [self chooseMedia];
+    }
+    
+    
+    
+}
+
 - (void)dismiss
 {
     if (self.delegate && [self.delegate respondsToSelector:@selector(CRMediaPickerControllerDidCancel:)]) {
@@ -102,9 +122,9 @@
     
     if (![UIImagePickerController isSourceTypeAvailable:imagePickerSourceType]) {
         
-		NSString *photoLibraryNotAvailableMessage = NSLocalizedString(@"Photo Library not available", nil);
+        NSString *photoLibraryNotAvailableMessage = NSLocalizedString(@"Photo Library not available", nil);
         
-		if (imagePickerSourceType == UIImagePickerControllerSourceTypeCamera) {
+        if (imagePickerSourceType == UIImagePickerControllerSourceTypeCamera) {
             
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Camera not available", nil)
                                                                 message:nil
@@ -133,7 +153,7 @@
             
         }
         return;
-	}
+    }
     
     UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
     imagePickerController.delegate = self;
@@ -206,11 +226,11 @@
             [self.popoverController presentPopoverFromRect:CGRectMake(400, 400, 100, 100) inView:self.delegate.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
             
             /*
-            if (self.showFromBarButtonItem) {
-                [self.popoverController presentPopoverFromBarButtonItem:self.showFromBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-            } else {
-                [self.popoverController presentPopoverFromRect:self.showFromRect inView:self.showFromViewController.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-            }
+             if (self.showFromBarButtonItem) {
+             [self.popoverController presentPopoverFromBarButtonItem:self.showFromBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+             } else {
+             [self.popoverController presentPopoverFromRect:self.showFromRect inView:self.showFromViewController.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+             }
              */
             
         } else {
@@ -261,9 +281,12 @@
     return imagePickerSourceType;
 }
 
-- (void)chooseMedia
+
+- (void)chooseMediaAndDelete
 {
-	NSString *cancelButton = NSLocalizedString(@"Cancel", nil);
+    NSString *cancelButton = NSLocalizedString(@"Cancel", nil);
+    
+    NSString *deleteButton = NSLocalizedString(@"Delete", nil);
     
     NSString *mediaTypeString = @"photo or video";
     if ((self.mediaType & CRMediaPickerControllerMediaTypeImage) && !(self.mediaType & CRMediaPickerControllerMediaTypeVideo)) {
@@ -276,9 +299,75 @@
     
     NSString *lastTakenButton = NSLocalizedString(lastTakenLocalizedString, nil);
     
-	NSString *photoLibraryButton = NSLocalizedString(@"Photo Library", nil);
-	NSString *savedPhotosButton = NSLocalizedString(@"Saved Photos", nil);
-	NSString *cameraButton = NSLocalizedString(@"Camera", nil);
+    NSString *photoLibraryButton = NSLocalizedString(@"Photo Library", nil);
+    NSString *savedPhotosButton = NSLocalizedString(@"Saved Photos", nil);
+    NSString *cameraButton = NSLocalizedString(@"Camera", nil);
+    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                             delegate:self
+                                                    cancelButtonTitle:nil
+                                               destructiveButtonTitle:nil
+                                                    otherButtonTitles:nil, nil];
+    
+    actionSheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
+    
+    NSInteger idx = 0;
+    
+    CRMediaPickerControllerSourceType sourceType = self.sourceType;
+    
+    if (sourceType & CRMediaPickerControllerSourceTypeLastPhotoTaken) {
+        [actionSheet addButtonWithTitle:lastTakenButton];
+        idx++;
+    }
+    
+    if (sourceType & CRMediaPickerControllerSourceTypePhotoLibrary) {
+        [actionSheet addButtonWithTitle:photoLibraryButton];
+        idx++;
+    }
+    
+    if (sourceType & CRMediaPickerControllerSourceTypeCamera
+        && [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        [actionSheet addButtonWithTitle:cameraButton];
+        idx++;
+    }
+    
+    if (sourceType & CRMediaPickerControllerSourceTypeSavedPhotosAlbum) {
+        [actionSheet addButtonWithTitle:savedPhotosButton];
+        idx++;
+    }
+    
+    [actionSheet addButtonWithTitle:deleteButton];
+    
+    [actionSheet setDestructiveButtonIndex:idx];
+    
+    [actionSheet addButtonWithTitle:cancelButton];
+    
+    [actionSheet setCancelButtonIndex:idx++];
+    
+    if (self.delegate) {
+        [actionSheet showInView:self.delegate.view];
+    }
+}
+
+
+- (void)chooseMedia
+{
+    NSString *cancelButton = NSLocalizedString(@"Cancel", nil);
+    
+    NSString *mediaTypeString = @"photo or video";
+    if ((self.mediaType & CRMediaPickerControllerMediaTypeImage) && !(self.mediaType & CRMediaPickerControllerMediaTypeVideo)) {
+        mediaTypeString = @"photo";
+    } else if ((self.mediaType & CRMediaPickerControllerMediaTypeVideo) && !(self.mediaType & CRMediaPickerControllerMediaTypeImage)) {
+        mediaTypeString = @"video";
+    }
+    
+    NSString *lastTakenLocalizedString = [NSString stringWithFormat:@"Last %@ taken", mediaTypeString];
+    
+    NSString *lastTakenButton = NSLocalizedString(lastTakenLocalizedString, nil);
+    
+    NSString *photoLibraryButton = NSLocalizedString(@"Photo Library", nil);
+    NSString *savedPhotosButton = NSLocalizedString(@"Saved Photos", nil);
+    NSString *cameraButton = NSLocalizedString(@"Camera", nil);
     
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                              delegate:self
@@ -394,9 +483,9 @@
 
 #pragma mark - UIActionSheetDelegate
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex;  // after animation
 {
-	UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     
     NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
     
@@ -411,12 +500,20 @@
             [self.delegate CRMediaPickerControllerDidCancel:self];
         }
         return;
+    } else if ([buttonTitle isEqualToString:NSLocalizedString(@"Delete", nil)]) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(CRMediaPickerControllerDidDelete)]) {
+            [self.delegate CRMediaPickerControllerDidDelete];
+        }
+        return;
     }
     
     CRMediaPickerControllerSourceType mediaSourceType = [self imagePickerControllerSourceTypeFromSourceType:sourceType];
     
     [self presentMediaPickerWithSourceType:mediaSourceType];
 }
+
+
+
 
 #pragma mark - UIImagePickerControllerDelegate
 
