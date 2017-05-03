@@ -143,7 +143,8 @@
         self.overlayView = nil;
     }
     
-    [self.mediaPickerController show];
+    BOOL isImageNoEmpty = self.imageView.image;
+    [self.mediaPickerController showAndDeleteImage:isImageNoEmpty];
 }
 
 - (IBAction)cancelOverlayViewButtonTapped:(id)sender
@@ -200,6 +201,11 @@
 - (void)CRMediaPickerControllerDidCancel:(CRMediaPickerController *)mediaPickerController
 {
     NSLog(@"%s", __PRETTY_FUNCTION__);
+}
+
+- (void)CRMediaPickerControllerDidDelete
+{
+    self.imageView.image = nil;
 }
 
 @end
